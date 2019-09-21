@@ -1,4 +1,5 @@
 use std::env::set_current_dir;
+use std::ffi::CString;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
@@ -13,6 +14,7 @@ pub struct Daemonize {
     pub stdout_file: Option<PathBuf>,
     pub stderr_file: Option<PathBuf>,
     pub umask: Option<libc::mode_t>,
+    pub chroot: bool,
 }
 
 impl Daemonize {
@@ -35,7 +37,7 @@ impl Daemonize {
         if let Some(umask) = self.umask {
             libc::umask(umask);
         }
-        if let Some(chdir) = self.chdir {
+        if let Some(chdir) = &self.chdir {
             set_current_dir(chdir).map_err(|_| "chdir() failed")?;
         }
         let stdin_file = self.stdin_file.unwrap_or_else(|| "/dev/null".into());
@@ -72,6 +74,21 @@ impl Daemonize {
                 .map_err(|_| "Creating the PID file failed")?
                 .write_all(pid_str.as_bytes())
                 .map_err(|_| "Writing to the PID file failed")?;
+        }
+        if let Some(chdir) = &self.chdir {
+            if self.chroot {
+                let chdir = CString::new(
+                    chdir
+                        .as_os_str()
+                        .to_str()
+                        .ok_or("Unexpected characters in chdir path")?,
+                )
+                .map_err(|_| "Unexpected chdir path")?;
+                if libc::chroot(chdir.as_ptr()) != 0 {
+                    return Err("chroot failed");
+                }
+                set_current_dir("/").map_err(|_| "chdir(\"/\") failed")?;
+            }
         }
         Ok(())
     }
