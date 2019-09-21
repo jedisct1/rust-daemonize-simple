@@ -50,6 +50,7 @@ impl Daemonize {
         }
         let stdout_file = self.stdout_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
+            .create(true)
             .write(true)
             .open(stdout_file)
             .map_err(|_| "Unable to open the stdout file")?;
@@ -58,6 +59,7 @@ impl Daemonize {
         }
         let stderr_file = self.stderr_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
+            .create(true)
             .write(true)
             .open(stderr_file)
             .map_err(|_| "Unable to open the stderr file")?;
