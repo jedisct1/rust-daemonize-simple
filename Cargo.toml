@@ -1,6 +1,6 @@
 [package]
 name = "daemonize-simple"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Frank Denis <github@pureftpd.org>"]
 edition = "2018"
 description = "A simple crate to run an app as a Unix daemon"
@@ -9,4 +9,4 @@ homepage = "https://github.com/jedisct1/rust-daemonize-simple"
 repository = "https://github.com/jedisct1/rust-daemonize-simple"
 
 [dependencies]
-libc = "0.2.62"
+libc = "0.2"
