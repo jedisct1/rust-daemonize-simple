@@ -1,9 +1,9 @@
-#[cfg(target_os = "unix")]
+#[cfg(unix)]
 mod unix;
-#[cfg(target_os = "unix")]
+#[cfg(unix)]
 pub use unix::*;
 
-#[cfg(not(target_os = "unix"))]
+#[cfg(not(unix))]
 mod not_unix;
-#[cfg(not(target_os = "unix"))]
+#[cfg(not(unix))]
 pub use not_unix::*;
