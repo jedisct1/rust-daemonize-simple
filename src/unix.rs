@@ -38,9 +38,6 @@ impl Daemonize {
         if let Some(umask) = self.umask {
             libc::umask(umask);
         }
-        if let Some(chdir) = &self.chdir {
-            set_current_dir(chdir).map_err(|_| "chdir() failed")?;
-        }
 
         let stdin_file = self.stdin_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
