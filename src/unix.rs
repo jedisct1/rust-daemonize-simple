@@ -53,7 +53,7 @@ impl Daemonize {
         let stdout_file = self.stdout_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
             .create(true)
-            .write(true)
+            .append(true)
             .open(stdout_file)
             .map_err(|_| "Unable to open the stdout file")?;
         if libc::dup2(fd.as_raw_fd(), 1) == -1 {
@@ -62,7 +62,7 @@ impl Daemonize {
         let stderr_file = self.stderr_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
             .create(true)
-            .write(true)
+            .append(true)
             .open(stderr_file)
             .map_err(|_| "Unable to open the stderr file")?;
         if libc::dup2(fd.as_raw_fd(), 2) == -1 {
