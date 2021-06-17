@@ -3,6 +3,7 @@ use std::ffi::CString;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+use std::mem;
 use std::os::unix::io::AsRawFd;
 use std::path::PathBuf;
 
@@ -45,29 +46,35 @@ impl Daemonize {
         let stdin_file = self.stdin_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
             .read(true)
-            .open(stdin_file)
+            .open(&stdin_file)
             .map_err(|_| "Unable to open the stdin file")?;
         if libc::dup2(fd.as_raw_fd(), 0) == -1 {
             return Err("dup2(stdin) failed");
         }
+        mem::forget(stdin_file);
+        libc::close(fd.as_raw_fd());
         let stdout_file = self.stdout_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(stdout_file)
+            .open(&stdout_file)
             .map_err(|_| "Unable to open the stdout file")?;
         if libc::dup2(fd.as_raw_fd(), 1) == -1 {
             return Err("dup2(stdout) failed");
         }
+        mem::forget(stdout_file);
+        libc::close(fd.as_raw_fd());
         let stderr_file = self.stderr_file.unwrap_or_else(|| "/dev/null".into());
         let fd = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(stderr_file)
+            .open(&stderr_file)
             .map_err(|_| "Unable to open the stderr file")?;
         if libc::dup2(fd.as_raw_fd(), 2) == -1 {
             return Err("dup2(stderr) failed");
         }
+        mem::forget(stderr_file);
+        libc::close(fd.as_raw_fd());
 
         if let Some(pid_file) = self.pid_file {
             let pid = match libc::getpid() {
