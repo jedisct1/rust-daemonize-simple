@@ -11,6 +11,7 @@ pub struct Daemonize {
     pub stdout_file: Option<PathBuf>,
     pub stderr_file: Option<PathBuf>,
     pub chroot: bool,
+    pub append: bool,
 }
 
 impl Daemonize {

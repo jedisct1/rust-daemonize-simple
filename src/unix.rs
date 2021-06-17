@@ -16,6 +16,7 @@ pub struct Daemonize {
     pub stderr_file: Option<PathBuf>,
     pub umask: Option<libc::mode_t>,
     pub chroot: bool,
+    pub append: bool,
 }
 
 impl Daemonize {
@@ -57,6 +58,7 @@ impl Daemonize {
         let fd = OpenOptions::new()
             .create(true)
             .write(true)
+            .append(self.append)
             .open(&stdout_file)
             .map_err(|_| "Unable to open the stdout file")?;
         if libc::dup2(fd.as_raw_fd(), 1) == -1 {
@@ -68,6 +70,7 @@ impl Daemonize {
         let fd = OpenOptions::new()
             .create(true)
             .write(true)
+            .append(self.append)
             .open(&stderr_file)
             .map_err(|_| "Unable to open the stderr file")?;
         if libc::dup2(fd.as_raw_fd(), 2) == -1 {
