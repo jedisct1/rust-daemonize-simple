@@ -1,9 +1,10 @@
 [package]
+keywords = ["daemon", "daemonize", "unix", "fork", "process"]
 name = "daemonize-simple"
 version = "0.1.6"
 authors = ["Frank Denis <github@pureftpd.org>"]
 edition = "2018"
-description = "A simple crate to run an app as a Unix daemon"
+description = "Unix daemonization with double-fork process detachment, PID files, and standard I/O redirection."
 license = "MIT"
 homepage = "https://github.com/jedisct1/rust-daemonize-simple"
 repository = "https://github.com/jedisct1/rust-daemonize-simple"
